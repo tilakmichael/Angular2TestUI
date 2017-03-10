@@ -13,8 +13,8 @@ var forms_1 = require("@angular/forms");
 var core_1 = require("@angular/core");
 var app_data_services_1 = require("../service/app.data.services");
 var app_common_service_1 = require("../service/app.common.service");
-var AppAccSlBook = (function () {
-    function AppAccSlBook(_data, _common, _bldr) {
+var AppAccBook = (function () {
+    function AppAccBook(_data, _common, _bldr) {
         this._data = _data;
         this._common = _common;
         this._bldr = _bldr;
@@ -24,10 +24,10 @@ var AppAccSlBook = (function () {
         this.slData = [];
         this.allGlData = [];
         this.editFlag = false;
-        this.emptyData = { "id": -1, "code": null, "name": null, "glid": null, orgid: null, crdr: null, type: 'SL' };
+        this.emptyData = { "id": -1, "code": null, "name": null, "glid": null, orgid: null, crdr: null, type: 'LG', ref_number: null, address: null, city: null, state: null, country: null, person: null, phone: null, email: null, web: null };
     }
     ;
-    AppAccSlBook.prototype.ngOnInit = function () {
+    AppAccBook.prototype.ngOnInit = function () {
         var _this = this;
         this.orgId = this._common.getOrg();
         console.log('org id  ' + this.orgId);
@@ -36,7 +36,7 @@ var AppAccSlBook = (function () {
             _this.allData = resp;
             _this._common.log(resp);
             if (_this.allData.length > 0) {
-                _this.slData = _this.allData.filter(function (data) { return data.orgid == _this.orgId && data.type == 'SL'; });
+                _this.slData = _this.allData.filter(function (data) { return data.orgid == _this.orgId && data.type == 'LG'; });
             }
         }, function (error) { _this.error = error; });
         this._data.getData('gl')
@@ -46,7 +46,7 @@ var AppAccSlBook = (function () {
             console.log(' glt2 ' + _this.allGlData.length);
         }, function (error) { _this.error = error; });
     };
-    AppAccSlBook.prototype.initData = function (newData, doc) {
+    AppAccBook.prototype.initData = function (newData, doc) {
         console.log('init data');
         this.editFlag = true;
         this.editId = -1;
@@ -58,13 +58,13 @@ var AppAccSlBook = (function () {
             this.formDatas = this._bldr.group(doc);
         }
     };
-    AppAccSlBook.prototype.addData = function () {
+    AppAccBook.prototype.addData = function () {
         console.log('Add Data');
         this.initData(true, null);
         this.emptyData.orgid = this.orgId;
         this.slData.unshift(this.emptyData);
     };
-    AppAccSlBook.prototype.onCancel = function (id, index) {
+    AppAccBook.prototype.onCancel = function (id, index) {
         console.log('cancel data');
         this.editFlag = false;
         this.editId = undefined;
@@ -72,7 +72,7 @@ var AppAccSlBook = (function () {
             this.slData.splice(index, 1);
         }
     };
-    AppAccSlBook.prototype.deleteData = function (id, index) {
+    AppAccBook.prototype.deleteData = function (id, index) {
         var _this = this;
         if (confirm("Delete this Ledger Definition? ")) {
             this._data.deleteData(this.table, id).subscribe(function (resp) {
@@ -87,21 +87,21 @@ var AppAccSlBook = (function () {
             }, function (error) { return _this.error = error; });
         }
     };
-    AppAccSlBook.prototype.editData = function (id, index) {
+    AppAccBook.prototype.editData = function (id, index) {
         console.log(' Data');
         this.initData(false, this.slData[index]);
         //this.emptyData.orgid = this.orgId ;
         //this.glData.unshift(this.emptyData) ;
     };
-    AppAccSlBook.prototype.updateGl = function (doc, bookldgr, code) {
+    AppAccBook.prototype.updateGl = function (doc, bookldgr, code) {
         var _this = this;
         console.log('update gl ' + bookldgr + '  / ' + code);
         doc.bookledger = bookldgr;
-        doc.ledger = code;
+        doc.book = code;
         this._data.updateData('gl', doc).subscribe(function (respData) {
         }, function (respError) { _this.error = respError; });
     };
-    AppAccSlBook.prototype.saveData = function (id, index) {
+    AppAccBook.prototype.saveData = function (id, index) {
         var _this = this;
         var data = this.formDatas.value;
         data.code = data.code.toUpperCase();
@@ -139,7 +139,7 @@ var AppAccSlBook = (function () {
             this._data.insertData(this.table, data).subscribe(function (respData) {
                 _this.slData[index] = data;
                 _this.slData[index].id = respData.id;
-                _this.updateGl(_this.allGlData[indx], 'SL', data.code);
+                _this.updateGl(_this.allGlData[indx], 'LG', data.code);
             }, function (respError) { _this.error = respError; });
         }
         else {
@@ -157,7 +157,7 @@ var AppAccSlBook = (function () {
                 if (updGl_1) {
                     indx = _this._common.findIndex(_this.allGlData, 'id== ' + data.glid);
                     if (indx >= 0) {
-                        _this.updateGl(_this.allGlData[indx], 'SL', data.code);
+                        _this.updateGl(_this.allGlData[indx], 'LG', data.code);
                     }
                 }
             }, function (respError) { _this.error = respError; });
@@ -165,14 +165,14 @@ var AppAccSlBook = (function () {
         this.onCancel(-2, -2);
     };
     ;
-    return AppAccSlBook;
+    return AppAccBook;
 }());
-AppAccSlBook = __decorate([
+AppAccBook = __decorate([
     core_1.Component({
         selector: 'APP-SLBOOK',
-        templateUrl: 'app/views/app.acc.slbook.html'
+        templateUrl: 'app/views/app.acc.book.html'
     }),
     __metadata("design:paramtypes", [app_data_services_1.AppDataService, app_common_service_1.AppCommonService, forms_1.FormBuilder])
-], AppAccSlBook);
-exports.AppAccSlBook = AppAccSlBook;
-//# sourceMappingURL=app.acc.slbook.js.map
+], AppAccBook);
+exports.AppAccBook = AppAccBook;
+//# sourceMappingURL=app.acc.book.js.map

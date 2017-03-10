@@ -7,22 +7,24 @@ import {AppCommonService} from '../service/app.common.service';
 
 @Component({
     selector:'APP-SLBOOK' ,
-    templateUrl:'app/views/app.acc.slbook.html'
+    templateUrl:'app/views/app.acc.sl.html'
 })  
 
 
-export class AppAccSlBook implements OnInit{
+export class AppAccSl implements OnInit{
 
- public table:string =  'slbook' ;   
+ public table:string =  'sl' ;   
  public allData= [] ;
  public error = []  ;
  public slData=[] ;
- public allGlData=[] ; 
+ public slbook=[] ; 
  public formDatas:FormGroup ; 
  public orgId:number ;
  public editFlag:boolean=false;
  public editId:number;
- public emptyData = {"id":-1,"code":null,"name":null,"glid":null, orgid:null, crdr:null , type:'SL'} ;
+ public slcode:string ;
+ public glid:number ;
+ public emptyData = {name:null,glid:null,slcode:null,address1:null,address2:null,city:null,state:null,country:null,pin:null,phone:null,contact:null,email:null,id:-1, orgid:null} ;
 
  constructor( private _data:AppDataService , private _common:AppCommonService , private _bldr:FormBuilder) { };
 
@@ -35,15 +37,15 @@ export class AppAccSlBook implements OnInit{
             this.allData = resp ;
             this._common.log(resp) ; 
             if (this.allData.length > 0){
-               this.slData = this.allData.filter(data => { return  data.orgid==this.orgId && data.type =='SL'  });
+               this.slData = this.allData.filter(data => { return  data.orgid==this.orgId && data.slcode==this.slcode});
             }  
         }, error => {this.error = error  }) ;
 
-        this._data.getData('gl' )
+        this._data.getData('slbook' )
             .subscribe(resp => {
-            console.log(' glt ' + resp.length) ;     
-            this.allGlData = resp.filter( _data => _data.orgid==this.orgId  ) ;
-            console.log(' glt2 ' + this.allGlData.length) ; 
+            console.log('slbook ' + resp.length) ;     
+            this.slbook = resp.filter( _data => _data.orgid==this.orgId && _data.type=='SL' ) ;
+            console.log(' slbook2 ' + this.slbook.length) ; 
         }, error => {this.error = error  }) ;
  }
 
@@ -52,7 +54,9 @@ export class AppAccSlBook implements OnInit{
     console.log('init data') ; 
     this.editFlag  = true ;
     this.editId    = -1;
-    this.emptyData.orgid = this.orgId ;
+    this.emptyData.orgid  = this.orgId ;
+    this.emptyData.slcode = this.slcode ; 
+    this.emptyData.glid   = this.glid   ;
     this.formDatas = this._bldr.group(this.emptyData )
     if (!newData && doc ){
         console.log('edit data'); 
@@ -66,7 +70,7 @@ export class AppAccSlBook implements OnInit{
 addData() {
     console.log('Add Data') ; 
     this.initData(true, null) ; 
-    this.emptyData.orgid = this.orgId ;
+    //this.emptyData.orgid = this.orgId ;
     this.slData.unshift(this.emptyData) ;
 }
 
@@ -85,10 +89,10 @@ deleteData(id:number, index:number) {
           this._data.deleteData(this.table, id).subscribe(resp => {
                this._common.log( resp ) ;
                if (resp.affectedRows >= 1) { 
-                   let indx = this._common.findIndex(this.allGlData , 'id== '+this.slData[index].glid);
-                   if (indx >= 0) {
-                        this.updateGl(this.allGlData[indx] , null, null ) ;
-                   }
+                   //let indx = this._common.findIndex(this.allGlData , 'id== '+this.slData[index].glid);
+                   //if (indx >= 0) {
+                   //     this.updateGl(this.allGlData[indx] , null, null ) ;
+                  // }
   
                   this.slData.splice(index, 1);
                 }                      
@@ -106,15 +110,6 @@ editData(id:number, index:number) {
 }
 
 
-updateGl(doc:any , bookldgr:string ,  code:string) {
-    console.log('update gl ' + bookldgr +'  / ' + code) ;
-    doc.bookledger = bookldgr ; 
-    doc.ledger     = code ;
-    
-    this._data.updateData('gl', doc).subscribe(respData => {
-     }, respError => { this.error = respError });
-
-}
 
 
 saveData(id, index){
@@ -142,45 +137,19 @@ saveData(id, index){
        if (id == -1) {
            console.log('insert data') ;
            console.log( data  ) 
-           indx = this._common.findIndex(this.allGlData , 'id== '+data.glid);
            //console.log(' dup id ' + dupid) ;
-           if (indx >= 0) {
-              data.crdr =  this.allGlData[indx].crdr ;
-           }
-
-           if (this.allGlData[indx].bookledger ){
-               alert ('General Ledger linked to another book'  ) ; 
-               return ;
-           }
            
            //this.glData[index].orgid = this.orgId ;
            // insert
             this._data.insertData(this.table, data).subscribe(respData => {
                 this.slData[index]     = data ;
                 this.slData[index].id  = respData.id;
-                this.updateGl(this.allGlData[indx] , 'SL', data.code ) ; 
             }, respError => { this.error = respError });
                    
         } else {
                console.log('update data') ;
                let updGl:boolean = false ;
                this._data.updateData(this.table, data).subscribe(respData => {
-               if (this.slData[index].glid != data.glid) {
-                   updGl = true ;
-                   indx = this._common.findIndex(this.allGlData , 'id== '+this.slData[index].glid);
-                   if (indx >= 0) {
-                        this.updateGl(this.allGlData[indx] , null, null ) ;
-                   }
-                  
-               }    
-               this.slData[index]     = data ;
-               if (updGl){
-                   indx = this._common.findIndex(this.allGlData , 'id== '+data.glid);
-                   if (indx >= 0) {
-                        this.updateGl(this.allGlData[indx] , 'SL', data.code ) ;
-                   }
-                   
-               } 
             }, respError => { this.error = respError });
         }
         this.onCancel(-2,-2) ;
@@ -188,6 +157,17 @@ saveData(id, index){
    };
 
 
+
+
+ public onChange(event) {
+      console.log('sl code ' + this.slcode ) ; 
+      if (this.slcode) {
+         let indx = this._common.findIndex(this.slbook , "code== '"+this.slcode+"'")  ;   
+         console.log(' Gl index ' + indx) ; 
+         this.glid = this.slbook[indx].glid ; 
+         console.log(' Gl id ' + this.glid ) ;  
+      }
+  }
 
 
     

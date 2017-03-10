@@ -7,7 +7,7 @@
                        <td>Code</td>
                         <td>Name</td>
                         <td>General Ledger</td>
-                        <td> <button class="btn btn-primary" [disabled]="!addDataFlag || editFlag" (click)="addData()">  Add </button> </td>
+                        <td> <button class="btn btn-primary" [disabled]="editFlag" (click)="addData()">  Add </button> </td>
                      </tr>   
                 </thead>
                 <tbody> 
@@ -31,20 +31,23 @@
 
                             <form class="form-horizontal" [formGroup]='formDatas'> 
                                <div class="form-group">
-
+                                    
                                  <label  class='control-label col-sm-2' required autofocus>Code</label>
-                                 <div class="col-sm-5">
-                                    <input type='text' class='form-control' id='#icode' name='code' formControlName="code"  required>
+                                 <div class="col-sm-1">
+                                     <input type='text' class='form-control' id='#icode' name='code' formControlName="code" required  minlength="3"  maxlength="3" style="text-transform:uppercase" >
                                  </div>
-                                 <label  class='control-label col-sm-2'>Name</label>
+
+                                 <label  class='control-label col-sm-2'>Name </label>  
                                  <div class="col-sm-5">
                                     <input type='text' class='form-control' id='#iname' name='name' formControlName="name"  required>
                                  </div>
-                                
+
+                               </div>  
+                               <div> 
                                  <label  class='control-label col-sm-2'>Ledger</label>
                                  <div class="col-sm-3">
                                      <select class='form-control' id='#glid' name='glid' formControlName="glid" required >
-                                        <option *ngFor='let _gdata of allGlData'  value='_gdata.id' required> _gdata.name </option>                                    
+                                        <option *ngFor='let _gdata of allGlData'  [value]='_gdata.id' required> {{_gdata.name}} </option>                                    
                                     </select>    
                                  </div>
                                </div>

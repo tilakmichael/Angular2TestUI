@@ -98,7 +98,7 @@ var AppCommonService = (function () {
         };
     };
     AppCommonService.prototype.findIndex = function (doc, filter) {
-        console.log(filter);
+        console.log('filter : ' + filter);
         filter = '_doc.' + filter.trim();
         console.log(filter);
         var index = doc.findIndex(function (_doc) { return eval(filter); });

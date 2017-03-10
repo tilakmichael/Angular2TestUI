@@ -9,7 +9,8 @@ import {AppAccLookups } from '../scripts/app.acc.lookups' ;
 import {AppAccTypes} from '../scripts/app.acc.types' ;
 import {AppAccPeriod} from '../scripts/app.acc.period' ;
 import {AppAccSlBook} from '../scripts/app.acc.slbook' ;
-
+import { AppAccBook} from '../scripts/app.acc.book' ; 
+import { AppAccSl} from '../scripts/app.acc.sl' ;
 
 
 const routes:Routes=[
@@ -20,9 +21,10 @@ const routes:Routes=[
     {path:'period', component:AppAccPeriod}, 
     {path:'gl', component:AppAccGl},
     {path:'slbook', component:AppAccSlBook},
-
+    {path:'book', component:AppAccBook},
+    {path:'sl', component:AppAccSl},   
 ] ;
 
 export const MenuRoutes: ModuleWithProviders = RouterModule.forRoot(routes) ;
-export const MenuComponents = [ AppAccOrgs, AppAccTypes,AppAccLookups,AppAccHome,AppAccPeriod, AppAccGl,AppAccSlBook] ; 
+export const MenuComponents = [ AppAccOrgs, AppAccTypes,AppAccLookups,AppAccHome,AppAccPeriod, AppAccGl,AppAccSlBook,AppAccBook,AppAccSl] ; 
 

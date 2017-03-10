@@ -18,12 +18,13 @@ import {AppAccLookups } from './scripts/app.acc.lookups' ;
 import {AppAccOrgSelector } from './scripts/app.acc.org.select' ; 
 import {AppAccPeriod} from './scripts/app.acc.period' ;
 import { AppAccSlBook} from './scripts/app.acc.slbook' ; 
-
+import { AppAccBook} from './scripts/app.acc.book' ; 
+import { AppAccSl} from './scripts/app.acc.sl' ; 
 //import {AppAccTypeCrud} from './scripts/app.acc.type.crud' ;
 
 @NgModule({
     imports: [BrowserModule, /*ModalModule.forRoot(), BootstrapModalModule,*/ FormsModule, ReactiveFormsModule, HttpModule ,  MenuRoutes] , 
-    declarations:[AppComponent, AppMenus,AppAccHome ,AppAccOrgs, AppAccOrgSelector,AppAccLookups,MenuComponents,AppAccPeriod,AppAccSlBook /*,AppAccTypeCrud*/ ] , 
+    declarations:[AppComponent, AppMenus,AppAccHome ,AppAccOrgs, AppAccOrgSelector,AppAccLookups,MenuComponents,AppAccPeriod,AppAccSlBook,AppAccBook,AppAccSl /*,AppAccTypeCrud*/ ] , 
     providers: [DatePipe] ,
     //entryComponents: [ AppAccTypeCrud ],
     bootstrap: [AppComponent]

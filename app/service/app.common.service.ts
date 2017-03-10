@@ -102,7 +102,7 @@ export class AppCommonService {
 
 
  public findIndex(doc, filter:string ){
-   console.log(filter) ;
+   console.log('filter : ' +  filter) ;
    filter = '_doc.'+filter.trim() ; 
    console.log(filter) ;
    

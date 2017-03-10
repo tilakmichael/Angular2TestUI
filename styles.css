@@ -25,6 +25,10 @@ tr.seqnum:hover{
 input.ng-invalid{border-left:2px solid red}
 input.ng-valid{border-left: (internal value)}
 
+select.ng-invalid{border-left:2px solid red}
+select.ng-valid{border-left: (internal value)}
+
+
 .droplinks {display: none;  position: absolute; background-color:gray;  min-width: 140px; }
 .droplinks a { padding: 10px; display: block;  color:white} 
 .droplinks a:hover {  background-color:lightgray;} 

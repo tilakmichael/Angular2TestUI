@@ -7,11 +7,11 @@ import {AppCommonService} from '../service/app.common.service';
 
 @Component({
     selector:'APP-SLBOOK' ,
-    templateUrl:'app/views/app.acc.slbook.html'
+    templateUrl:'app/views/app.acc.book.html'
 })  
 
 
-export class AppAccSlBook implements OnInit{
+export class AppAccBook implements OnInit{
 
  public table:string =  'slbook' ;   
  public allData= [] ;
@@ -22,7 +22,7 @@ export class AppAccSlBook implements OnInit{
  public orgId:number ;
  public editFlag:boolean=false;
  public editId:number;
- public emptyData = {"id":-1,"code":null,"name":null,"glid":null, orgid:null, crdr:null , type:'SL'} ;
+ public emptyData = {"id":-1,"code":null,"name":null,"glid":null, orgid:null, crdr:null , type:'LG' , ref_number:null,address:null,city:null,state:null,country:null,person:null,phone:null,email:null,web:null } ;
 
  constructor( private _data:AppDataService , private _common:AppCommonService , private _bldr:FormBuilder) { };
 
@@ -35,7 +35,7 @@ export class AppAccSlBook implements OnInit{
             this.allData = resp ;
             this._common.log(resp) ; 
             if (this.allData.length > 0){
-               this.slData = this.allData.filter(data => { return  data.orgid==this.orgId && data.type =='SL'  });
+               this.slData = this.allData.filter(data =>  data.orgid==this.orgId && data.type =='LG' );
             }  
         }, error => {this.error = error  }) ;
 
@@ -109,7 +109,7 @@ editData(id:number, index:number) {
 updateGl(doc:any , bookldgr:string ,  code:string) {
     console.log('update gl ' + bookldgr +'  / ' + code) ;
     doc.bookledger = bookldgr ; 
-    doc.ledger     = code ;
+    doc.book     = code ;
     
     this._data.updateData('gl', doc).subscribe(respData => {
      }, respError => { this.error = respError });
@@ -158,7 +158,7 @@ saveData(id, index){
             this._data.insertData(this.table, data).subscribe(respData => {
                 this.slData[index]     = data ;
                 this.slData[index].id  = respData.id;
-                this.updateGl(this.allGlData[indx] , 'SL', data.code ) ; 
+                this.updateGl(this.allGlData[indx] , 'LG', data.code ) ; 
             }, respError => { this.error = respError });
                    
         } else {
@@ -177,7 +177,7 @@ saveData(id, index){
                if (updGl){
                    indx = this._common.findIndex(this.allGlData , 'id== '+data.glid);
                    if (indx >= 0) {
-                        this.updateGl(this.allGlData[indx] , 'SL', data.code ) ;
+                        this.updateGl(this.allGlData[indx] , 'LG', data.code ) ;
                    }
                    
                } 
@@ -186,9 +186,5 @@ saveData(id, index){
         this.onCancel(-2,-2) ;
    
    };
-
-
-
-
     
 }
