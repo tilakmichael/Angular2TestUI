@@ -24,10 +24,11 @@
         </div>
     </div>
     <div class="table-responsive" *ngIf='slcode'>
+           <h4> Ledger : {{lgrName}}   {{error}} </h4>
            <table class="table table-bordered table-hover"> 
                 <thead>
                     <tr> 
-                       <!--td> Seq </td--> 
+                       <td> # </td> 
                         <td>Name</td>
                         <td>Contact</td>
                         <td>Phone</td>
@@ -38,18 +39,18 @@
                 </thead>
                 <tbody> 
                     <tr *ngFor="let data of slData ; let rowindex = index">
-                        <!--td> <input type="text" value= '{{rowindex+1}}' disabled="true"> </td--> 
-                        <td *ngIf='!editFlag || data.id !== editId'> {{data.name}} </td>
-                        <td *ngIf='!editFlag || data.id !== editId'> {{data.contact}}</td>
-                        <td *ngIf='!editFlag || data.id !== editId'> {{data.phone}}</td>
-                        <td *ngIf='!editFlag || data.id !== editId'> {{data.email}}</td>
-                        <td *ngIf='!editFlag || data.id !== editId'> {{data.state}},{{data.country}}</td>
+                        <td *ngIf='!editFlag || data.id !== editId'> {{rowindex+1}}   </td> 
+                        <td *ngIf='!editFlag || data.id !== editId'> {{data.name}}    </td>
+                        <td *ngIf='!editFlag || data.id !== editId'> {{data.contact}} </td>
+                        <td *ngIf='!editFlag || data.id !== editId'> {{data.phone}}   </td>
+                        <td *ngIf='!editFlag || data.id !== editId'> {{data.email}}   </td>
+                        <td *ngIf='!editFlag || data.id !== editId'> {{data.state}}   </td>
                         <td *ngIf='!editFlag || data.id !== editId'> 
-                           <button class="btn btn-warning" (click)="editData(data.id, rowindex)"  [disabled]="editFlag"> Edit </button> 
-                           <button class="btn btn-danger" (click)="deleteData(data.id, rowindex)" [disabled]="editFlag"> Delete </button> 
+                            <button class="btn btn-warning btn-sm" (click)="editData(data.id, rowindex)"  [disabled]="editFlag"> Edit </button> 
+                            <button class="btn btn-danger  btn-sm" (click)="deleteData(data.id, rowindex)" [disabled]="editFlag"> Delete </button> 
                         </td>
                         <!--  Editing    -->
-                        <td *ngIf='editFlag && data.id == editId' colspan='6'>
+                        <td *ngIf='editFlag && data.id == editId' colspan='7'>
                         <div >  
 
                             <form class="form-horizontal" [formGroup]='formDatas'> 
@@ -78,12 +79,11 @@
                                      <input type='text' class='form-control' id='#iemail' name='email' formControlName="email" >      
                                  </div>
 
-
                                </div>
                                <div class="form-group"> 
                                  <label  class='control-label col-sm-1'>Address</label>
                                  <div class="col-sm-4">
-                                     <input type='text' class='form-control' id='#iaddress' name='address' formControlName="address">                                
+                                     <input type='text' class='form-control' id='#iaddress' name='address' formControlName="address1">                                
                                  </div>
                             
                                  <label  class='control-label col-sm-1'>City</label>
@@ -103,17 +103,37 @@
                                      <input type='text' class='form-control' id='#icountry' name='country' formControlName="country" >      
                                  </div>
                                </div>
-                               
 
                                <div class="form-group" style="float:right">
                                     <button type="button" class="btn btn-warning" (click)='saveData(data.id,rowindex)' [disabled]='!formDatas.valid || formDatas.pristine'> Save </button> 
-                                    <button type="button" class="btn btn-danger" (click)='onCancel(data.id,rowindex)'> Cancell </button>
+                                    <button type="button" class="btn btn-danger" (click)='onCancel(data.id,rowindex)'>Cancell</button>
                                </div>    
                             </form>
                         </div>
-                        </td>                        
+                       </td>                        
                     </tr>
                 </tbody>
            </table>    
+
+            <div *ngIf='allSlData.length > 10'> 
+               <ul *ngIf='pager.pages && pager.pages.length' class='pagination'>
+                   <li [ngClass]='{disabled:pager.currentPage===1}'> 
+                       <a (click)='setPage(1)'> First </a>
+                   </li> 
+                   <li [ngClass]='{disabled:pager.currentPage===1}'> 
+                       <a (click)='setPage(pager.currentPage-1)'> Previous </a>
+                   </li> 
+                   <li *ngFor='let page of pager.pages' [ngClass]='{disabled:pager.currentPage===1}'> 
+                       <a (click)='setPage(page)'> {{page}} </a>
+                   </li> 
+                   <li [ngClass]='{disabled:pager.currentPage===pager.totalPages}'> 
+                       <a (click)='setPage(pager.currentPage+1)'>Next </a>
+                   </li> 
+                   <li [ngClass]='{disabled:pager.currentPage===pager.totalPages}'> 
+                       <a (click)='setPage(pager.totalPages)'>Last </a>
+                   </li> 
+               </ul>
+           </div>    
+
     </div> 
 </div>

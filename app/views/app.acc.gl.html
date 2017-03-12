@@ -37,8 +37,8 @@
                         <td *ngIf='!editFlag || data.id !== editId'> {{data.book}}</td>
                         <td *ngIf='!editFlag || data.id !== editId'> {{data.ledger}}</td>
                         <td *ngIf='!editFlag || data.id !== editId'>
-                           <button class="btn btn-warning" (click)="editData(data.id, rowindex)"  [disabled]="editFlag"> Edit </button> 
-                           <button class="btn btn-danger"  (click)="deleteData(data.id, rowindex)" [disabled]="editFlag"> Delete </button> 
+                           <button class="btn btn-warning btn-sm" (click)="editData(data.id, rowindex)"  [disabled]="editFlag"> Edit </button> 
+                           <button class="btn btn-danger btn-sm"  (click)="deleteData(data.id, rowindex)" [disabled]="editFlag"> Delete </button> 
                         </td> 
                         <!--- Edit Data -->
                         <td *ngIf='editFlag && data.id == editId' colspan="8">

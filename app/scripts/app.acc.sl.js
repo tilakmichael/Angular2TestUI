@@ -22,9 +22,11 @@ var AppAccSl = (function () {
         this.allData = [];
         this.error = [];
         this.slData = [];
+        this.allSlData = [];
         this.slbook = [];
         this.editFlag = false;
-        this.emptyData = { name: null, glid: null, slcode: null, address1: null, address2: null, city: null, state: null, country: null, pin: null, phone: null, contact: null, email: null, id: -1, orgid: null };
+        this.emptyData = { id: -1, name: null, glid: null, slcode: null, address1: null, address2: null, city: null, state: null, country: null, pin: null, phone: null, contact: null, email: null, orgid: null };
+        this.pager = {};
     }
     ;
     AppAccSl.prototype.ngOnInit = function () {
@@ -36,7 +38,9 @@ var AppAccSl = (function () {
             _this.allData = resp;
             _this._common.log(resp);
             if (_this.allData.length > 0) {
-                _this.slData = _this.allData.filter(function (data) { return data.orgid == _this.orgId && data.slcode == _this.slcode; });
+                console.log('sl ccode  ' + _this.slcode);
+                // this.slData = this.allData.filter(data =>  data.orgid==this.orgId && data.slcode==this.slcode );
+                console.log('sl data ' + _this.slData.length);
             }
         }, function (error) { _this.error = error; });
         this._data.getData('slbook')
@@ -67,9 +71,10 @@ var AppAccSl = (function () {
         this.slData.unshift(this.emptyData);
     };
     AppAccSl.prototype.onCancel = function (id, index) {
-        console.log('cancel data');
+        console.log('cancel data ', index, id);
         this.editFlag = false;
         this.editId = undefined;
+        console.log('edit flag ' + this.editFlag);
         if (id == -1) {
             this.slData.splice(index, 1);
         }
@@ -77,16 +82,21 @@ var AppAccSl = (function () {
     AppAccSl.prototype.deleteData = function (id, index) {
         var _this = this;
         if (confirm("Delete this Ledger Definition? ")) {
+            console.log('delete id  ' + id);
             this._data.deleteData(this.table, id).subscribe(function (resp) {
                 _this._common.log(resp);
                 if (resp.affectedRows >= 1) {
-                    //let indx = this._common.findIndex(this.allGlData , 'id== '+this.slData[index].glid);
-                    //if (indx >= 0) {
-                    //     this.updateGl(this.allGlData[indx] , null, null ) ;
-                    // }
                     _this.slData.splice(index, 1);
+                    var alidx = _this._common.findIndex(_this.allSlData, 'id == ' + id);
+                    if (alidx > 0) {
+                        _this.allSlData.splice(alidx, 1);
+                        _this.setPage(_this.pager.curentPage);
+                    }
                 }
             }, function (error) { return _this.error = error; });
+            if (this.slData.length > 10) {
+                this.setPage(this.pager.curentPage);
+            }
         }
     };
     AppAccSl.prototype.editData = function (id, index) {
@@ -98,18 +108,8 @@ var AppAccSl = (function () {
     AppAccSl.prototype.saveData = function (id, index) {
         var _this = this;
         var data = this.formDatas.value;
-        data.code = data.code.toUpperCase();
-        console.log(' Save  ' + id + "/" + index);
-        var indx = this._common.findIndex(this.slData, 'code== "' + data.code + '"');
-        //console.log(' dup id ' + dupid) ;
-        if (indx >= 0) {
-            if (this.slData[indx].id != id) {
-                alert("The code already exists, pls enter diferent code");
-                return;
-            }
-        }
-        indx = this._common.findIndex(this.slData, 'name=="' + data.name + '"');
-        //console.log(' dup id ' + dupid) ;
+        var indx = this._common.findIndex(this.slData, 'name=="' + data.name + '"');
+        console.log(' dup idx ' + indx);
         if (indx >= 0) {
             if (this.slData[indx].id != id) {
                 alert("The Name already exists, pls enter diferent Name");
@@ -125,25 +125,47 @@ var AppAccSl = (function () {
             this._data.insertData(this.table, data).subscribe(function (respData) {
                 _this.slData[index] = data;
                 _this.slData[index].id = respData.id;
+                _this.allSlData.push(_this.slData[index]);
             }, function (respError) { _this.error = respError; });
         }
         else {
-            console.log('update data');
-            var updGl = false;
+            console.log('update data ' + id);
             this._data.updateData(this.table, data).subscribe(function (respData) {
+                console.log('update sucessfull ' + data.state);
+                _this.slData[index] = data;
+                var alidx = _this._common.findIndex(_this.allSlData, 'id == ' + id);
+                if (alidx >= 0) {
+                    _this.allSlData[index] = data;
+                }
             }, function (respError) { _this.error = respError; });
         }
         this.onCancel(-2, -2);
+        if (this.slData.length > 10) {
+            this.setPage(this.pager.curentPage);
+        }
     };
     ;
     AppAccSl.prototype.onChange = function (event) {
+        var _this = this;
         console.log('sl code ' + this.slcode);
         if (this.slcode) {
+            this.allSlData = this.allData.filter(function (data) { return data.orgid == _this.orgId && data.slcode == _this.slcode; });
+            this.setPage(1);
+            console.log(' sl all data ' + this.allSlData.length);
+            console.log(' sl data ' + this.slData.length);
             var indx = this._common.findIndex(this.slbook, "code== '" + this.slcode + "'");
             console.log(' Gl index ' + indx);
             this.glid = this.slbook[indx].glid;
+            this.lgrName = this.slbook[indx].name;
             console.log(' Gl id ' + this.glid);
         }
+    };
+    AppAccSl.prototype.setPage = function (page) {
+        if (page < 1 || page > this.pager.totalPages) {
+            return;
+        }
+        this.pager = this._common.getPager(this.allSlData.length, page);
+        this.slData = this.allSlData.slice(this.pager.startIndex, this.pager.endIndex + 1);
     };
     return AppAccSl;
 }());

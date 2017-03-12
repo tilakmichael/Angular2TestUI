@@ -32,7 +32,15 @@
                </ul>
  
             </li>
-            <li><a [routerLink]="['orgs']">Transactions</a></li>
+
+            <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">Transactions
+               <b class="caret"></b>
+               </a>
+               <ul class="dropdown-menu">
+                    <li><a [routerLink]="['doc']">Payments</a></li>
+               </ul>
+            </li>
+
             <li><a [routerLink]="['orgs']">Reports</a></li>
             </ul>
         </div>

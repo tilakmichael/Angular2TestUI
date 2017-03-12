@@ -17,6 +17,7 @@ export class AppAccSl implements OnInit{
  public allData= [] ;
  public error = []  ;
  public slData=[] ;
+ public allSlData=[] ;
  public slbook=[] ; 
  public formDatas:FormGroup ; 
  public orgId:number ;
@@ -24,8 +25,9 @@ export class AppAccSl implements OnInit{
  public editId:number;
  public slcode:string ;
  public glid:number ;
- public emptyData = {name:null,glid:null,slcode:null,address1:null,address2:null,city:null,state:null,country:null,pin:null,phone:null,contact:null,email:null,id:-1, orgid:null} ;
-
+ public lgrName:string ; 
+ public emptyData = {id:-1, name:null,glid:null,slcode:null,address1:null,address2:null,city:null,state:null,country:null,pin:null,phone:null,contact:null,email:null,orgid:null} ;
+ public pager:any = {};
  constructor( private _data:AppDataService , private _common:AppCommonService , private _bldr:FormBuilder) { };
 
  ngOnInit(){
@@ -37,7 +39,9 @@ export class AppAccSl implements OnInit{
             this.allData = resp ;
             this._common.log(resp) ; 
             if (this.allData.length > 0){
-               this.slData = this.allData.filter(data => { return  data.orgid==this.orgId && data.slcode==this.slcode});
+               console.log('sl ccode  ' + this.slcode) ;  
+              // this.slData = this.allData.filter(data =>  data.orgid==this.orgId && data.slcode==this.slcode );
+               console.log('sl data ' + this.slData.length ) ; 
             }  
         }, error => {this.error = error  }) ;
 
@@ -75,9 +79,10 @@ addData() {
 }
 
 onCancel(id, index){
-    console.log('cancel data') ; 
+    console.log('cancel data ' , index , id) ; 
     this.editFlag = false ;
     this.editId   = undefined;
+    console.log( 'edit flag ' + this.editFlag) ; 
     if (id==-1){ 
        this.slData.splice(index, 1);
     }
@@ -85,19 +90,26 @@ onCancel(id, index){
 
 
 deleteData(id:number, index:number) {
-       if (confirm( "Delete this Ledger Definition? ")) {
+     if (confirm( "Delete this Ledger Definition? ")) {
+         console.log('delete id  ' + id ) ; 
           this._data.deleteData(this.table, id).subscribe(resp => {
                this._common.log( resp ) ;
                if (resp.affectedRows >= 1) { 
-                   //let indx = this._common.findIndex(this.allGlData , 'id== '+this.slData[index].glid);
-                   //if (indx >= 0) {
-                   //     this.updateGl(this.allGlData[indx] , null, null ) ;
-                  // }
-  
                   this.slData.splice(index, 1);
+
+                  let alidx = this._common.findIndex( this.allSlData, 'id == '+id ) ; 
+                  if (alidx > 0) {
+                     this.allSlData.splice(alidx, 1) ;
+                     this.setPage(this.pager.curentPage)
+                   }
+
                 }                      
            }, error => this.error = error  )
-       }   
+          if (this.slData.length > 10 ) {
+            this.setPage(this.pager.curentPage)
+          }
+ 
+     }   
 }
 
 
@@ -114,19 +126,8 @@ editData(id:number, index:number) {
 
 saveData(id, index){
        let data =  this.formDatas.value ; 
-       data.code = data.code.toUpperCase();
-       console.log(' Save  ' + id + "/" + index);
-       let indx:number = this._common.findIndex(this.slData , 'code== "'+data.code+'"');
-        //console.log(' dup id ' + dupid) ;
-       if (indx >= 0) {
-            if (this.slData[indx].id != id) {
-                alert("The code already exists, pls enter diferent code");
-                return;
-            }
-       }
-
-       indx = this._common.findIndex(this.slData , 'name=="'+data.name+'"');
-        //console.log(' dup id ' + dupid) ;
+       let indx = this._common.findIndex(this.slData , 'name=="'+data.name+'"');
+      console.log(' dup idx ' + indx) ;
        if (indx >= 0) {
             if (this.slData[indx].id != id) {
                 alert("The Name already exists, pls enter diferent Name");
@@ -144,16 +145,28 @@ saveData(id, index){
             this._data.insertData(this.table, data).subscribe(respData => {
                 this.slData[index]     = data ;
                 this.slData[index].id  = respData.id;
+                this.allSlData.push(this.slData[index]) ; 
             }, respError => { this.error = respError });
                    
         } else {
-               console.log('update data') ;
-               let updGl:boolean = false ;
+               console.log('update data '+ id) ;
+               
                this._data.updateData(this.table, data).subscribe(respData => {
-            }, respError => { this.error = respError });
+                  console.log('update sucessfull '+ data.state) ; 
+                  this.slData[index] = data ;    
+                  let alidx = this._common.findIndex( this.allSlData, 'id == '+id ) ; 
+                  if (alidx >= 0) {
+                      this.allSlData[index] = data ;
+                  }   
+                           
+               }, respError => { this.error = respError });
         }
         this.onCancel(-2,-2) ;
-   
+        if (this.slData.length > 10 ) {
+            this.setPage(this.pager.curentPage)
+        }
+ 
+
    };
 
 
@@ -162,12 +175,26 @@ saveData(id, index){
  public onChange(event) {
       console.log('sl code ' + this.slcode ) ; 
       if (this.slcode) {
+         this.allSlData = this.allData.filter(data =>  data.orgid==this.orgId && data.slcode==this.slcode );
+         this.setPage(1) ;
+         console.log(' sl all data ' + this.allSlData.length) ;
+         console.log(' sl data ' + this.slData.length) ;  
          let indx = this._common.findIndex(this.slbook , "code== '"+this.slcode+"'")  ;   
          console.log(' Gl index ' + indx) ; 
-         this.glid = this.slbook[indx].glid ; 
+         this.glid      = this.slbook[indx].glid ;
+         this.lgrName   = this.slbook[indx].name ;
          console.log(' Gl id ' + this.glid ) ;  
       }
   }
+
+  setPage(page:number){
+    if ( page < 1 || page > this.pager.totalPages){
+        return ;
+    }
+    this.pager = this._common.getPager(this.allSlData.length, page);
+    this.slData= this.allSlData.slice(this.pager.startIndex, this.pager.endIndex+1)
+  }
+
 
 
     
