@@ -57,7 +57,11 @@ export class AppCommonService {
       this.endDt=date ;
   }
 
-  public sqlDt2Jdt(date:Date) {
+  public sqlDt2Jdt(date:Date) { 
+
+      if (date == null || date==undefined || !date) {
+          return ;
+      }
       var jsDate  = this._date.transform(date, 'yyyy-MM-dd');
       console.log(jsDate) ;  
       return jsDate ;

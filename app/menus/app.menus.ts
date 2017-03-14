@@ -26,7 +26,6 @@ export class AppMenus  implements OnInit{
     }
     ngOnInit(){
         console.log('Menu entry') ;
-
         this.orgId = this._common.getOrg() ; 
         if (!this.orgId || this.orgId === null)  {
            // redirect to select org

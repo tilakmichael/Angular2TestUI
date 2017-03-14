@@ -56,6 +56,9 @@ var AppCommonService = (function () {
         this.endDt = date;
     };
     AppCommonService.prototype.sqlDt2Jdt = function (date) {
+        if (date == null || date == undefined || !date) {
+            return;
+        }
         var jsDate = this._date.transform(date, 'yyyy-MM-dd');
         console.log(jsDate);
         return jsDate;

@@ -55,6 +55,10 @@ ngOnInit(){
 
 addData() {
     console.log('Add Data') 
+    this.emptyData.orgid = this.orgId ; 
+    this.emptyData.prdid = this.prdId ; 
+    this.emptyData.code  = this.slcode ; 
+    
     this._route.navigateByUrl('docdet/'+ JSON.stringify(this.emptyData) ); 
 }
 

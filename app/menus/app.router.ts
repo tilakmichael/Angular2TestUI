@@ -1,5 +1,4 @@
-import { AppAccDocDet } from './../scripts/app.acc.docdet';
-import { AppAccDoc } from './../scripts/app.acc.doc';
+
 import {Routes, RouterModule, provideRoutes } from '@angular/router' ;
 import {ModuleWithProviders} from '@angular/core' ; 
 
